@@ -1,0 +1,44 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+  - name: Init
+    include_role:
+      name: CommonTasks
+      tasks_from: Manage-Report-Status
+    vars:
+      report_type: 'Init'
+
+  - name: Init Line
+    include_role:
+      name: CommonTasks
+      tasks_from: Manage-Report-Status
+    vars:
+      report_type: 'FirstLine'
+
+- hosts: all
+  strategy: free
+  gather_facts: no
+  tasks:
+  - name: Get timestamp from the system
+    shell: "date '+%Y-%m-%d %H:%M:%S'"
+    ignore_errors: True
+
+  - name: save status
+    vars:
+      report_my_status: 'Debug'
+      report_my_desc: "Resultado do status"
+      report_type: 'Continue'
+    include_role:
+      name: CommonTasks
+      tasks_from: Manage-Report-Status
+
+- hosts: all
+  gather_facts: no
+  tasks:
+  - name: save status
+    include_role:
+      name: CommonTasks
+      tasks_from: Manage-Report-Status
+    vars:
+      report_type: 'Finish'

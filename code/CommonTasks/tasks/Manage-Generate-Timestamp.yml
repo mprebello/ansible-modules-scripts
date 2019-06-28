@@ -1,0 +1,19 @@
+#====================================================================
+# Open Warp
+# Date: 2018/04/16
+# Author: Marcel Rebello
+# mail: marcel.rebello@br.unisys.com
+# ====================================================================
+- name: Get timestamp from the system
+  shell: "date '+%Y-%m-%d %H:%M:%S'"
+  register: report_timestamp_command
+  become: no
+  ignore_errors: True
+  run_once: yes
+  delegate_to: 127.0.0.1
+
+- name: Set defaul facts
+  set_fact:
+    report_timestamp: "{{ report_timestamp_command.stdout }}"
+  when: report_timestamp_command is defined
+  ignore_errors: True

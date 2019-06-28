@@ -1,0 +1,72 @@
+#====================================================================
+# Open Warp
+# Date: 2018/04/16
+# Author: Marcel Rebello
+# mail: marcel.rebello@br.unisys.com
+# ====================================================================
+- name: Set default facts
+  set_fact:
+    report_header_default: 'Status, Detalhes, Tempo da execucao'
+    report_host_default: "{{ inventory_hostname }}"
+
+- name: Set default status
+  set_fact:
+    report_my_status: 'Failed'
+  when: report_my_status is not defined
+
+- name: Set default desc
+  set_fact:
+    report_my_status: 'No Desc'
+  when: report_my_desc is not defined
+
+- name: Create Header
+  include_role:
+    name: CommonTasks
+    tasks_from: Manage-Report
+  vars:
+    report_header: "{{ report_header_default }}"
+    report_host: "{{ report_host_default }}"
+    report_action: 'I'
+    report_run_once: True
+    report_details: "None, None, None"
+  when: report_type == "Init"
+
+- name: set First Line Error
+  include_role:
+    name: CommonTasks
+    tasks_from: Manage-Report
+  vars:
+    report_header: "{{ report_header_default }}"
+    report_host: "{{ report_host_default }}"
+    report_action: 'C'
+    report_run_once: False
+    report_status: "Failed"
+    report_desc: "Sem conexao com o servidor"
+    report_details: "{{ report_status }}; {{ report_desc }}; {{ report_timestamp }}"
+  when: report_type == "FirstLine"
+
+- name: Set Continue Line
+  include_role:
+    name: CommonTasks
+    tasks_from: Manage-Report
+  vars:
+    report_header: "{{ report_header_default }}"
+    report_host: "{{ report_host_default }}"
+    report_action: 'C'
+    report_run_once: False
+    report_status: "{{ report_my_status }}"
+    report_desc: "{{ report_my_desc }}"
+    report_details: "{{ report_status }}; {{ report_desc }}; {{ report_timestamp }}"
+  when: report_type == "Continue"
+
+- name: Set Continue Line
+  include_role:
+    name: CommonTasks
+    tasks_from: Manage-Report
+  vars:
+    report_header: "{{ report_header_default }}"
+    report_host: "{{ report_host_default }}"
+    report_action: 'F'
+    report_run_once: True
+    report_details: "None, None, None"
+  when: report_type == "Finish"

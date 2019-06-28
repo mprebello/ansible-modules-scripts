@@ -1,0 +1,19 @@
+#====================================================================
+# Capture Linux updates
+# Date: 2018/04/16
+# Author: Marcel Rebello
+# mail: marcel.rebello@br.unisys.com
+# ====================================================================
+
+- name: Set option Email
+  set_fact:
+    email_option: ''
+  when:
+    - email_option is not defined
+
+- name: Email Sent
+  command: python "{{ script_to_send_email }}" -s "{{ email_subject }}" -t "{{ email_to }}" -m "{{ email_message }}" {{ email_option }}
+  become: no
+  run_once: yes
+  ignore_errors: True
+  delegate_to: 127.0.0.1

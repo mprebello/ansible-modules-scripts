@@ -1,0 +1,25 @@
+#====================================================================
+# Open Warp
+# Date: 2018/04/16
+# Author: Marcel Rebello
+# mail: marcel.rebello@br.unisys.com
+# ====================================================================
+- name: Set defaul facts
+  set_fact:
+    report_file: "/tmp/nonamereport.csv"
+    report_action: 'I'
+    report_status: 'None'
+    report_host: 'bender.unisys.local'
+    report_details: 'Void, Void, Void'
+    report_run_once: False
+    report_options: ''
+    report_header: 'Status, Detalhes, Tempo da execucao'
+    report_timestamp: "{{ lookup('pipe','date +%Y-%m-%d\\ %H:%M:%S') }}"
+
+- name: Manage Report Status
+  command: python "{{ script_report }}" -N "{{ report_file }}" -A "{{ report_action }}" -H "{{ report_host }}" -F "{{ report_header }}" -T "{{ report_details }}" {{ report_options }}
+  become: no
+  run_once: "{{ report_run_once }}"
+  ignore_errors: True
+  register: report_result
+  delegate_to: 127.0.0.1

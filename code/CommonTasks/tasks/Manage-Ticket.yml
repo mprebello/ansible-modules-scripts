@@ -1,0 +1,34 @@
+#====================================================================
+# Open Warp
+# Date: 2018/04/16
+# Author: Marcel Rebello
+# mail: marcel.rebello@br.unisys.com
+# ====================================================================
+
+- name: Set defaul facts
+  set_fact:
+    ticket_subject: 'No Subject Defined'
+    ticket_descripton: 'No Description Defined'
+    ticket_type: 'I'
+    ticket_action: 'O'
+    ticket_host: 'myserver.unisys.local'
+    ticket_options: ''
+    ticket_run_once: 'no'
+
+- name: Manage Ticket
+  command: python "{{ script_ticket }}" -T "{{ ticket_type }}" -t "{{ ticket_action }}" -s "{{ ticket_subject }}" -d "{{ ticket_descripton }}" -H "{{ ticket_host }}" {{ ticket_options }}
+  become: no
+  run_once: "{{ ticket_run_once }}"
+  ignore_errors: True
+  register: ticket_result
+  delegate_to: 127.0.0.1
+
+- name: Set Result
+  set_fact:
+    ticket_answer: "{{ ticket_result.stdout }}"
+  run_once: "{{ ticket_run_once }}"
+
+- name: Show Result ticket
+  debug:
+    var: ticket_answer
+  run_once: "{{ ticket_run_once }}"
